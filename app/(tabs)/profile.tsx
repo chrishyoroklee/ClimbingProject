@@ -1,116 +1,268 @@
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 export default function ProfileScreen() {
   const router = useRouter();
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#9CBFD9', dark: '#1A3349' }}
-      headerImage={<Image style={styles.headerImage} />}>
-      <ThemedView style={styles.profileContainer}>
-        <ThemedText type="title">John Doe</ThemedText>
-        <ThemedText type="defaultSemiBold">@johndoe</ThemedText>
-        <ThemedText style={styles.bio}>
-          React Native developer. Outdoor enthusiast. Coffee lover.
-        </ThemedText>
-      </ThemedView>
+    <SafeAreaView style={styles.container}>
+      {/* Fixed Header */}
+      <View style={styles.headerContainer}>
+        <ThemedText style={styles.headerTitle}>Climbing Project</ThemedText>
+      </View>
 
-      <ThemedView style={styles.statsContainer}>
-        <ThemedView style={styles.statItem}>
-          <ThemedText type="title">42</ThemedText>
-          <ThemedText>Posts</ThemedText>
+      {/* Scrollable Content */}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}>
+        <ThemedView style={styles.profileHeader}>
+          <ThemedText type="title" style={styles.climberName}>
+            Ice Bear
+          </ThemedText>
+          <ThemedView style={styles.profileSection}>
+            {/* <Image
+              source={require('@/assets/images/polar-bear.png')}
+              style={styles.avatar}
+            /> */}
+            <ThemedView style={styles.statsTable}>
+              <ThemedView style={styles.statsRow}>
+                <ThemedView style={styles.statsCell}>
+                  <ThemedText style={styles.statsLabel}>Height</ThemedText>
+                  <ThemedText style={styles.statsValue}>5'8"</ThemedText>
+                </ThemedView>
+                <ThemedView style={styles.statsCell}>
+                  <ThemedText style={styles.statsLabel}>Reach</ThemedText>
+                  <ThemedText style={styles.statsValue}>-2"</ThemedText>
+                </ThemedView>
+              </ThemedView>
+              <ThemedView style={styles.statsRow}>
+                <ThemedView style={styles.statsCell}>
+                  <ThemedText style={styles.statsLabel}>Grade</ThemedText>
+                  <ThemedText style={styles.statsValue}>v12</ThemedText>
+                </ThemedView>
+                <ThemedView style={styles.statsCell}>
+                  <ThemedText style={styles.statsLabel}>
+                    Climbing Style
+                  </ThemedText>
+                  <ThemedText style={styles.statsValue}>slopey</ThemedText>
+                </ThemedView>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
         </ThemedView>
-        <ThemedView style={styles.statItem}>
-          <ThemedText type="title">128</ThemedText>
-          <ThemedText>Followers</ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.statItem}>
-          <ThemedText type="title">97</ThemedText>
-          <ThemedText>Following</ThemedText>
-        </ThemedView>
-      </ThemedView>
 
-      <ThemedView style={styles.section}>
-        <ThemedText type="subtitle">About</ThemedText>
-        <ThemedText>
-          This is a simple profile screen template for your app. You can
-          customize it to display user information, settings, or any other
-          profile-related content.
-        </ThemedText>
-      </ThemedView>
+        <ThemedView style={styles.sectionContainer}>
+          <ThemedText style={styles.sectionTitle}>Location</ThemedText>
+          <ThemedView style={styles.mapPlaceholder}>
+            {/* Map would go here */}
+          </ThemedView>
+        </ThemedView>
 
-      <ThemedView style={styles.section}>
-        <ThemedText type="subtitle">Settings</ThemedText>
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => {
-            // Navigate to settings or trigger an action
-            // router.push('/settings');
-          }}>
-          <ThemedText>Edit Profile</ThemedText>
+        <ThemedView style={styles.sectionContainer}>
+          <ThemedText style={styles.sectionTitle}>My Ascents</ThemedText>
+          <ThemedView style={styles.ascentsContainer}></ThemedView>
+        </ThemedView>
+
+        <ThemedView style={styles.sectionContainer}>
+          <ThemedText style={styles.sectionTitle}>My Goals</ThemedText>
+          <ThemedView style={styles.goalsPlaceholder}>
+            {/* Goals content would go here */}
+          </ThemedView>
+        </ThemedView>
+      </ScrollView>
+
+      {/* Bottom Tab Navigation */}
+      <View style={styles.tabBar}>
+        <TouchableOpacity style={styles.tabItem}>
+          {/* <Image
+            source={require('@/assets/images/home-icon.png')}
+            style={styles.tabIcon}
+          /> */}
+          <ThemedText style={styles.tabLabel}>Home</ThemedText>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => {
-            // Sign out logic here
-          }}>
-          <ThemedText>Sign Out</ThemedText>
+        <TouchableOpacity style={styles.tabItem}>
+          {/* <Image
+            source={require('@/assets/images/calendar-icon.png')}
+            style={styles.tabIcon}
+          /> */}
+          <ThemedText style={styles.tabLabel}>Calendar</ThemedText>
         </TouchableOpacity>
-      </ThemedView>
-    </ParallaxScrollView>
+
+        <TouchableOpacity style={styles.tabItem}>
+          <View style={styles.activeTabIndicator} />
+          {/* <Image
+            source={require('@/assets/images/profile-icon.png')}
+            style={[styles.tabIcon, styles.activeTabIcon]}
+          /> */}
+          <ThemedText style={[styles.tabLabel, styles.activeTabLabel]}>
+            Profile
+          </ThemedText>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.tabItem}>
+          {/* <Image
+            source={require('@/assets/images/community-icon.png')}
+            style={styles.tabIcon}
+          /> */}
+          <ThemedText style={styles.tabLabel}>community</ThemedText>
+        </TouchableOpacity>
+      </View>
+
+      <StatusBar style="light" />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    height: 120,
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
-    resizeMode: 'cover',
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  profileContainer: {
+  headerContainer: {
+    height: 50,
+    width: '100%',
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    justifyContent: 'center',
+    backgroundColor: '#000000',
+  },
+  headerTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 70, // Add padding for tab bar
+  },
+  profileHeader: {
+    paddingHorizontal: 16,
+    paddingTop: 20,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#FFFFFF',
+  },
+  climberName: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 12,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginRight: 10,
   },
-  bio: {
-    textAlign: 'center',
-    marginTop: 8,
-    paddingHorizontal: 32,
+  statsTable: {
+    flex: 1,
+    backgroundColor: '#E0E0E0',
   },
-  statsContainer: {
+  statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 16,
-    marginBottom: 16,
-    borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(128, 128, 128, 0.2)',
+    borderBottomColor: '#CCCCCC',
   },
-  statItem: {
-    alignItems: 'center',
+  statsCell: {
+    flex: 1,
+    padding: 12,
   },
-  section: {
-    marginBottom: 24,
-    gap: 8,
+  statsLabel: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 6,
+    fontSize: 16,
   },
-  settingsButton: {
-    paddingVertical: 12,
+  statsValue: {
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  sectionContainer: {
+    paddingVertical: 15,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    marginTop: 8,
-    backgroundColor: 'rgba(128, 128, 128, 0.1)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#CCCCCC',
+    backgroundColor: '#E0E0E0',
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    marginLeft: 5,
+  },
+  mapPlaceholder: {
+    height: 200,
+    backgroundColor: '#E0E0E0',
+  },
+  ascentsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingVertical: 20,
+    minHeight: 80,
+  },
+  goalsPlaceholder: {
+    height: 200,
+    backgroundColor: '#E0E0E0',
+  },
+  tabBar: {
+    flexDirection: 'row',
+    height: 60,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  tabItem: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 8,
+  },
+  tabIcon: {
+    width: 24,
+    height: 24,
+    marginBottom: 4,
+    tintColor: '#777777',
+  },
+  tabLabel: {
+    fontSize: 12,
+    color: '#777777',
+  },
+  activeTabIcon: {
+    tintColor: '#0078D4',
+  },
+  activeTabLabel: {
+    color: '#0078D4',
+    fontWeight: 'bold',
+  },
+  activeTabIndicator: {
+    position: 'absolute',
+    top: 0,
+    height: 3,
+    width: '50%',
+    backgroundColor: '#0078D4',
+    borderRadius: 1.5,
   },
 });

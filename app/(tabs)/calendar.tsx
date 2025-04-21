@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, TouchableOpacity, FlatList, ScrollView, TextInput } from 'react-native';
+import { Modal, View, Text} from 'react-native';
 
 // Define types for our calendar
 interface CalendarDay {
@@ -20,73 +21,92 @@ export default function CalendarScreen() {
   const colorScheme = useColorScheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [logModalVisible, setLogModalVisible] = useState(false);
 
   // Define event interface
   interface CalendarEvent {
     id: number;
-    title: string;
-    time: string;
-    description: string;
+    date: string; // e.g., "2025-04-20"
+    mood: string; // emoji like "😄"
+    routes: {
+      name: string;
+      sent: boolean;
+    }[];
   }
+  
+  
 
   // Sample events
   const events: CalendarEvent[] = [
     {
       id: 1,
-      title: 'Team Meeting',
-      time: '10:00 AM',
-      description: 'Weekly sync with the team',
+      date: '2025-04-20',
+      mood: '💪',
+      routes: [
+        { name: 'Moon Crack V4', sent: true },
+        { name: 'Boulder Blitz V2', sent: false },
+      ],
     },
     {
       id: 2,
-      title: 'Lunch with Sarah',
-      time: '12:30 PM',
-      description: 'Discuss new project ideas',
+      date: '2025-04-18',
+      mood: '😐',
+      routes: [{ name: 'Slab Master V3', sent: false }],
     },
-    { id: 3, title: 'Gym Session', time: '5:00 PM', description: 'Cardio day' },
   ];
+  
+  const selectedDateString = selectedDate.toISOString().split('T')[0];
+  const selectedEvent = events.find(event => event.date === selectedDateString);  
+
+  const [logRoutes, setLogRoutes] = useState([{ name: '', sent: false }]);
+  const [mood, setMood] = useState('😄');
+  const moodOptions = ['😄', '😐', '😫', '💪', '😴'];
+
+
+
+  //Get the last log
+  const lastLog = events[events.length - 1];
 
   // Generate days for the current month view
   const getDaysInMonth = () => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth();
-
-    // Calculate first day of month and how many empty cells needed
+  
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Array for our grid
-    const days = [];
-
-    // Add empty cells for days before the first of the month
+  
+    const days: CalendarDay[] = [];
+  
+    // Add empty cells before the 1st of the month
     for (let i = 0; i < firstDay; i++) {
       days.push({ day: '', isEmpty: true });
     }
-
-    // Add all days in the month
+  
+    // Add all actual days
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month, i);
       const isToday =
-        date.getDate() === new Date().getDate() &&
-        date.getMonth() === new Date().getMonth() &&
-        date.getFullYear() === new Date().getFullYear();
-
+        date.toDateString() === new Date().toDateString();
       const isSelected =
-        date.getDate() === selectedDate.getDate() &&
-        date.getMonth() === selectedDate.getMonth() &&
-        date.getFullYear() === selectedDate.getFullYear();
-
+        date.toDateString() === selectedDate.toDateString();
+  
       days.push({
         day: i,
-        date: date,
-        isToday: isToday,
-        isSelected: isSelected,
+        date,
+        isToday,
+        isSelected,
         isEmpty: false,
       });
     }
-
+  
+    // Add empty cells after the last day to complete the last week
+    while (days.length % 7 !== 0) {
+      days.push({ day: '', isEmpty: true });
+    }
+  
     return days;
   };
+  
 
   // Calendar navigation functions
   const previousMonth = () => {
@@ -135,11 +155,27 @@ export default function CalendarScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {/* Calendar Header */}
       <ThemedView style={styles.header}>
         <ThemedText type="title">Calendar</ThemedText>
       </ThemedView>
+
+      {/* Last Log Panel */}
+      {lastLog && (
+        <ThemedView style={styles.lastLogPanel}>
+          <ThemedText type="defaultSemiBold">
+            Last Log – {lastLog.date} {lastLog.mood}
+          </ThemedText>
+          {lastLog.routes.map((route, index) => (
+            <ThemedText key={index}>
+              • {route.name} {route.sent ? '✅' : '❌'}
+            </ThemedText>
+          ))}
+        </ThemedView>
+
+
+      )}
 
       {/* Month Navigation */}
       <ThemedView style={styles.monthNavigation}>
@@ -181,29 +217,94 @@ export default function CalendarScreen() {
         style={styles.calendarGrid}
       />
 
+      <TouchableOpacity onPress={() => setLogModalVisible(true)}>
+        <ThemedText type="link">+ Log New Climb</ThemedText>
+      </TouchableOpacity>
+
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={logModalVisible}
+        onRequestClose={() => setLogModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ThemedText type="subtitle">Log New Climb</ThemedText>
+
+            {/* Mood Picker */}
+            <ThemedView style={styles.moodPicker}>
+              {moodOptions.map((m, idx) => (
+                <TouchableOpacity key={idx} onPress={() => setMood(m)}>
+                  <ThemedText style={[styles.moodOption, m === mood && styles.moodSelected]}>
+                    {m}
+                  </ThemedText>
+                </TouchableOpacity>
+              ))}
+            </ThemedView>
+
+            {/* Route List */}
+            {logRoutes.map((route, index) => (
+              <ThemedView key={index} style={styles.routeInputRow}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Route name"
+                  value={route.name}
+                  onChangeText={text => {
+                    const updated = [...logRoutes];
+                    updated[index].name = text;
+                    setLogRoutes(updated);
+                  }}
+                />
+                <TouchableOpacity onPress={() => {
+                  const updated = [...logRoutes];
+                  updated[index].sent = !updated[index].sent;
+                  setLogRoutes(updated);
+                }}>
+                  <ThemedText>{route.sent ? '✅' : '❌'}</ThemedText>
+                </TouchableOpacity>
+              </ThemedView>
+            ))}
+
+            {/* Close & Save */}
+            <TouchableOpacity onPress={() => setLogModalVisible(false)}>
+              <ThemedText style={styles.saveButton}>Save Log</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+
+
       {/* Selected Date Events */}
       <ThemedView style={styles.eventsContainer}>
         <ThemedText type="subtitle">
-          Events for {selectedDate.toLocaleDateString()}
+          Climbing Log for {selectedDate.toLocaleDateString()}
         </ThemedText>
 
-        {events.length > 0 ? (
-          events.map(event => (
-            <ThemedView key={event.id} style={styles.eventCard}>
-              <ThemedView style={styles.eventHeader}>
-                <ThemedText type="defaultSemiBold">{event.title}</ThemedText>
-                <ThemedText>{event.time}</ThemedText>
-              </ThemedView>
-              <ThemedText>{event.description}</ThemedText>
-            </ThemedView>
-          ))
+        {selectedEvent ? (
+          <ThemedView style={styles.eventCard}>
+            {/* Mood */}
+            <ThemedText style={{ fontSize: 18, marginBottom: 8 }}>
+              Mood: {selectedEvent.mood}
+            </ThemedText>
+
+            {/* Routes */}
+            {selectedEvent.routes.map((route, index) => (
+              <ThemedText key={index}>
+                • {route.name} {route.sent ? '✅' : '❌'}
+              </ThemedText>
+            ))}
+          </ThemedView>
         ) : (
           <ThemedView style={styles.noEvents}>
-            <ThemedText>No events scheduled for today</ThemedText>
+            <ThemedText>No climbs logged for this day</ThemedText>
           </ThemedView>
         )}
       </ThemedView>
-    </ThemedView>
+
+
+    </ScrollView>
   );
 }
 
@@ -212,6 +313,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     paddingTop: 60, // Add padding for the status bar
+    paddingBottom: 80,
+
   },
   header: {
     marginBottom: 20,
@@ -277,4 +380,77 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  saveButton: {
+    marginTop: 16,
+    padding: 12,
+    textAlign: 'center',
+    backgroundColor: '#8888ff',
+    borderRadius: 8,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  formSection: {
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: 'rgba(128,128,128,0.05)',
+    borderRadius: 8,
+  },
+  moodPicker: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 12,
+  },
+  moodOption: {
+    fontSize: 24,
+  },
+  moodSelected: {
+    fontSize: 28,
+  },
+  routeInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    marginRight: 8,
+    borderRadius: 6,
+  },
+  addRoute: {
+    color: 'blue',
+    marginTop: 8,
+  },
+  submitButton: {
+    backgroundColor: '#333',
+    padding: 12,
+    marginTop: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  lastLogPanel: {
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: 'rgba(128, 128, 128, 0.1)',
+    marginBottom: 16,
+  },  
+  
 });

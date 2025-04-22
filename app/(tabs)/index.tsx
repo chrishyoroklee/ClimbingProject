@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   View,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -15,6 +16,16 @@ import { ThemedView } from '@/components/ThemedView';
 export default function HomeScreen() {
   const router = useRouter();
 
+  const handleNavigateToRoute = (routeId: string) => {
+    // For development only - replace with actual navigation later
+    console.log(`Navigation to route ${routeId} requested`);
+    // You could also add an alert to show on the device
+    // Alert.alert('Navigation', `Would navigate to route: ${routeId}`);
+
+    // Uncomment when ready to implement real navigation
+    // router.push(`/routes/${routeId}`);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Fixed Header */}
@@ -22,46 +33,114 @@ export default function HomeScreen() {
         <ThemedText style={styles.headerTitle}>Climbing Project</ThemedText>
       </View>
 
-      {/* Scrollable Content */}
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Find my gym..."
+            placeholderTextColor="#888"
+          />
+        </View>
+        <TouchableOpacity style={styles.searchButton}>
+          <View style={styles.searchIcon}>
+            {/* Replace with actual search icon */}
+            <ThemedText style={{ fontSize: 20 }}>🔍</ThemedText>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* Gym Map */}
+      <View style={styles.mapContainer}>
+        {/* Placeholder for the gym map image */}
+        <View style={styles.gymMap}>
+          {/* Sample areas - replace with dynamic content */}
+          <View style={[styles.gymArea, { top: '20%', left: '25%' }]}>
+            <ThemedText style={styles.areaLabel}>23</ThemedText>
+            <ThemedText style={styles.areaName}>Buddha</ThemedText>
+          </View>
+
+          <View style={[styles.gymArea, { top: '30%', left: '45%' }]}>
+            <ThemedText style={styles.areaLabel}>3D</ThemedText>
+          </View>
+
+          <View style={[styles.gymArea, { top: '30%', right: '10%' }]}>
+            <ThemedText style={styles.areaLabel}>
+              Bulge, Prow, Corner
+            </ThemedText>
+          </View>
+
+          <View style={[styles.gymArea, { bottom: '30%', left: '15%' }]}>
+            <ThemedText style={styles.areaLabel}>Alcove & 45</ThemedText>
+          </View>
+
+          <View style={[styles.gymArea, { bottom: '10%', left: '40%' }]}>
+            <ThemedText style={styles.areaLabel}>Slab</ThemedText>
+          </View>
+
+          <View style={[styles.gymArea, { top: '40%', left: '5%' }]}>
+            <ThemedText style={styles.areaLabel}>11</ThemedText>
+            <ThemedText style={styles.areaName}>Mezzanine</ThemedText>
+          </View>
+        </View>
+      </View>
+
+      {/* Route Filters */}
+      <View style={styles.filterContainer}>
+        <ThemedText style={styles.filterTitle}>Find route by:</ThemedText>
+        <View style={styles.filterButtons}>
+          <TouchableOpacity style={styles.filterButton}>
+            <ThemedText style={styles.filterButtonText}>Grade</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.filterButton}>
+            <ThemedText style={styles.filterButtonText}>Style</ThemedText>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Scrollable Routes List */}
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}></ScrollView>
+        contentContainerStyle={styles.scrollContent}>
+        {/* Route Card - repeat for multiple routes */}
+        {[1, 2, 3, 4].map(item => (
+          <TouchableOpacity
+            key={item}
+            style={styles.routeCard}
+            onPress={() => handleNavigateToRoute(`route-${item}`)}>
+            <View style={styles.routeImageContainer}>
+              {/* Replace with actual route image */}
+              <View style={styles.routeImagePlaceholder} />
+            </View>
+            <View style={styles.routeInfo}>
+              <ThemedText style={styles.routeTitle}>White V4</ThemedText>
+              <ThemedText style={styles.routeLocation}>Mezzanine</ThemedText>
+              <View style={styles.routeTags}>
+                <ThemedText style={styles.routeTag}>#Crimp</ThemedText>
+                <ThemedText style={styles.routeTag}>#Coordination</ThemedText>
+              </View>
+              <ThemedText style={styles.routeAscents}>Ascents: 12</ThemedText>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
       {/* Bottom Tab Navigation */}
       <View style={styles.tabBar}>
         <TouchableOpacity style={styles.tabItem}>
-          {/* <Image
-            source={require('@/assets/images/home-icon.png')}
-            style={styles.tabIcon}
-          /> */}
-          <ThemedText style={styles.tabLabel}>Home</ThemedText>
+          <ThemedText style={styles.tabLabel}>Routes</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tabItem}>
-          {/* <Image
-            source={require('@/assets/images/calendar-icon.png')}
-            style={styles.tabIcon}
-          /> */}
+          <ThemedText style={styles.tabLabel}>Community</ThemedText>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.tabItem}>
           <ThemedText style={styles.tabLabel}>Calendar</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.tabItem}>
-          <View style={styles.activeTabIndicator} />
-          {/* <Image
-            source={require('@/assets/images/profile-icon.png')}
-            style={[styles.tabIcon, styles.activeTabIcon]}
-          /> */}
-          <ThemedText style={[styles.tabLabel, styles.activeTabLabel]}>
-            Profile
-          </ThemedText>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.tabItem}>
-          {/* <Image
-            source={require('@/assets/images/community-icon.png')}
-            style={styles.tabIcon}
-          /> */}
-          <ThemedText style={styles.tabLabel}>community</ThemedText>
+          <ThemedText style={styles.tabLabel}>Profile</ThemedText>
         </TouchableOpacity>
       </View>
 
@@ -76,7 +155,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   headerContainer: {
-    height: 50,
+    height: 60,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -85,88 +164,143 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#FFFFFF',
-    fontSize: 20,
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  searchInputContainer: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#CCCCCC',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    justifyContent: 'center',
+  },
+  searchInput: {
+    fontSize: 16,
+  },
+  searchButton: {
+    width: 40,
+    height: 40,
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mapContainer: {
+    height: 280,
+    padding: 10,
+    backgroundColor: '#F5F5F5',
+  },
+  gymMap: {
+    flex: 1,
+    backgroundColor: '#E0E0E0',
+    position: 'relative',
+    borderRadius: 8,
+  },
+  gymArea: {
+    position: 'absolute',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 15,
+    padding: 5,
+    alignItems: 'center',
+  },
+  areaLabel: {
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  areaName: {
+    fontSize: 12,
+  },
+  filterContainer: {
+    padding: 10,
+    backgroundColor: '#000000',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  filterTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  filterButtons: {
+    flexDirection: 'row',
+  },
+  filterButton: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginLeft: 10,
+  },
+  filterButtonText: {
     fontWeight: 'bold',
   },
   scrollView: {
     flex: 1,
+    backgroundColor: '#F0F0F0',
   },
   scrollContent: {
+    padding: 10,
     paddingBottom: 70, // Add padding for tab bar
   },
-  profileHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    backgroundColor: '#FFFFFF',
-  },
-  climberName: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  profileSection: {
+  routeCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: '#000000',
+    borderRadius: 10,
+    overflow: 'hidden',
     marginBottom: 10,
   },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginRight: 10,
+  routeImageContainer: {
+    width: 100,
+    height: 100,
   },
-  statsTable: {
+  routeImagePlaceholder: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#555555',
+  },
+  routeInfo: {
     flex: 1,
-    backgroundColor: '#E0E0E0',
+    padding: 10,
   },
-  statsRow: {
-    flexDirection: 'row',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#CCCCCC',
-  },
-  statsCell: {
-    flex: 1,
-    padding: 12,
-  },
-  statsLabel: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 6,
-    fontSize: 16,
-  },
-  statsValue: {
-    textAlign: 'center',
+  routeTitle: {
+    color: '#FFFFFF',
     fontSize: 18,
-  },
-  sectionContainer: {
-    paddingVertical: 15,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
-    backgroundColor: '#E0E0E0',
-  },
-  sectionTitle: {
-    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 15,
-    marginLeft: 5,
   },
-  mapPlaceholder: {
-    height: 200,
-    backgroundColor: '#E0E0E0',
+  routeLocation: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginBottom: 5,
   },
-  ascentsContainer: {
+  routeTags: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingVertical: 20,
-    minHeight: 80,
   },
-  goalsPlaceholder: {
-    height: 200,
-    backgroundColor: '#E0E0E0',
+  routeTag: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    marginRight: 8,
+  },
+  routeAscents: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginTop: 5,
+    textAlign: 'right',
   },
   tabBar: {
     flexDirection: 'row',
@@ -185,29 +319,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 8,
   },
-  tabIcon: {
-    width: 24,
-    height: 24,
-    marginBottom: 4,
-    tintColor: '#777777',
-  },
   tabLabel: {
     fontSize: 12,
     color: '#777777',
-  },
-  activeTabIcon: {
-    tintColor: '#0078D4',
-  },
-  activeTabLabel: {
-    color: '#0078D4',
-    fontWeight: 'bold',
-  },
-  activeTabIndicator: {
-    position: 'absolute',
-    top: 0,
-    height: 3,
-    width: '50%',
-    backgroundColor: '#0078D4',
-    borderRadius: 1.5,
   },
 });
